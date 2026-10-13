@@ -1,0 +1,18 @@
+plotSectors <- function(sectors, startYear, endYear, df = read.csv("gdp-nz.csv", stringsAsFactors = TRUE))
+  {
+    #Checking validity of sectors
+    stopifnot(length(sectors) > 0)
+    stopifnot(is.character(sectors) | is.numeric(sectors))
+    stopifnot(!anyNA(sectors))
+
+    #Setting up plot layout
+    ncol <- min(3, length(sectors))
+    nrow <- ceiling(length(sectors) / ncol)
+    par(mfrow = c(nrow, ncol))
+
+    #Plotting GDP growth rates for each sector
+    for (sector in sectors)
+      {
+        plotGrowths(sector, startYear, endYear, df)
+      }
+  }
