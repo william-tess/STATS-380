@@ -1,0 +1,35 @@
+getAnnualGrowth <- function(sector, startYear, endYear, df = read.csv("gdp-nz.csv", stringsAsFactors = TRUE))
+  {
+    #Checking validity of inputs using getGrowth()
+    getGrowth(sector, startYear, endYear, df)
+
+    #Convert sector index to name
+    if (is.numeric(sector) == TRUE)
+      {
+        sector <- levels(df$sector)[sector]
+      }
+
+    #Extracting specified sector from data frame
+    sectorData <- df[df$sector == sector, ]
+
+    #Calculating rolling annual GDP sums
+    amount <- sectorData$amount
+    annualRate <- rep(NA, length(amount) - 1)
+
+    if (length(amount) >= 5)
+      {
+        annualSum <- sapply(1:(length(amount) - 3), function(x) sum(amount[x:(x + 3)]))
+
+        #Calculating annual GDP growth rates
+        annualRate[4:length(annualRate)] <- diff(annualSum) / annualSum[-length(annualSum)] * 100
+      }
+
+    #Creating annual GDP growth data frame
+    growth <- data.frame(quarter = sectorData$quarter[-1], annualrate = annualRate)
+
+    #Selecting growth rates within specified years
+    year <- as.numeric(substr(as.character(growth$quarter), 1, 4))
+    growth <- growth[year >= startYear & year <= endYear, ]
+
+    growth
+  }
