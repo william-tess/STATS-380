@@ -1,0 +1,13 @@
+getGrowths <- function(sector, startYear, endYear, df = read.csv("gdp-nz.csv", stringsAsFactors = TRUE))
+  {
+    #Calculating quarterly growth rates
+    quarterly <- getGrowth(sector, startYear, endYear, df)
+
+    #Calculating annual growth rates
+    annual <- getAnnualGrowth(sector, startYear, endYear, df)
+
+    #Combining growth rates into one data frame
+    growth <- data.frame(quarter = quarterly$quarter, quarterlyRate = quarterly$rate, annualRate = annual$annualrate)
+
+    growth
+  }
