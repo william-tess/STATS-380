@@ -1,0 +1,47 @@
+plotGrowths <- function(sector, startYear, endYear, df = read.csv("gdp-nz.csv", stringsAsFactors = TRUE))
+  {
+    #Getting growth rates
+    growth <- getGrowths(sector, startYear, endYear, df)
+    stopifnot(nrow(growth) > 0)
+
+    if (is.numeric(sector))
+      {
+        sector <- levels(df$sector)[sector]
+      }
+
+    #Plot coordinates
+    x <- seq_len(nrow(growth))
+    yLim <- range(c(growth$quarterlyRate, growth$annualRate, 0), na.rm = TRUE)
+    if (diff(yLim) == 0) yLim <- c(-5, 5)
+
+    step <- diff(pretty(yLim))[1]
+    yTicks <- seq(round(yLim[1] / step) * step, round(yLim[2] / step) * step, by = step)
+    gap <- diff(yLim) * 0.03
+    yBottom <- min(yLim[1], min(yTicks)) - gap
+
+    #Year labels
+    quarter <- as.character(growth$quarter)
+    yearPosition <- which(substr(quarter, 5, 6) == "Q1")
+    years <- as.numeric(substr(quarter[yearPosition], 1, 4))
+    yearLabels <- ifelse((years - years[1]) %% 2 == 0, years, "")
+
+    #Creating plot
+    plot.new()
+    plot.window(xlim = c(0.5, length(x) + 0.5), ylim = c(yBottom - gap, max(yLim[2], max(yTicks)) + gap), xaxs = "i", yaxs = "i")
+
+    #Reference lines and growth rates
+    abline(h = seq(-20, 20, by = 5), col = "grey", lty = 2)
+    abline(h = 0)
+    rect(x - 0.35, pmin(0, growth$quarterlyRate), x + 0.35, pmax(0, growth$quarterlyRate), col = "#2297E6", border = NA)
+    lines(x, growth$annualRate, type = "o", col = "#DF536B", pch = 16, lwd = 2)
+
+    #Adding axes
+    segments(yearPosition[1], yBottom, yearPosition[length(yearPosition)], yBottom)
+    axis(1, at = yearPosition, labels = yearLabels, pos = yBottom, lwd = 0, lwd.ticks = 1, cex.axis = 0.7)
+    axis(2, at = yTicks, labels = yTicks, las = 0, lwd = 0, lwd.ticks = 1)
+    segments(0.5, min(yTicks), 0.5, max(yTicks))
+
+    #Adding labels and legend
+    title(main = sector, xlab = "Year", ylab = "GDP Growth Rate (%)")
+    legend("topright", legend = c("Quarterly", "Annual"), col = c("#2297E6", "#DF536B"), lty = 1, pch = c(NA, 16), lwd = 2, bg = "white", cex = 0.8)
+  }
