@@ -1,0 +1,31 @@
+getGrowth <- function(sector, startYear, endYear)
+  {
+
+  #Convert sector index to name
+  if (is.numeric(sector) == TRUE)
+    {
+    sector <- levels(gdp$sector)[sector]
+    }
+
+  #Extracting specified sector from gdp data frame
+  sectorData <- gdp[gdp$sector == sector, ]
+
+  #Calculating quarterly growth rate
+  amount <- sectorData$amount
+  rate <- diff(amount) / amount[-length(amount)] * 100
+
+  #Creating specified sector data frame
+  growth <- data.frame(quarter = sectorData$quarter[-1], rate = rate)
+
+  #Selecting growth rates within specified years
+  year <- as.numeric(substr(as.character(growth$quarter), 1, 4))
+  growth <- growth[year >= startYear & year <= endYear, ]
+
+  growth
+  }
+
+#Checking
+getGrowth("Agriculture", 1988, 1989)
+getGrowth("Total", 2025, 2026)
+levels(gdp[,1])[20]
+getGrowth(20, 2025, 2026)ing"))
