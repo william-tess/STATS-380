@@ -1,0 +1,18 @@
+getGrowth <- function(sector)
+  {
+    #Extracting specified sector from gdp data frame
+    sectorData <- gdp[gdp$sector == sector, ]
+  
+    #Calculating quarterly growth rate
+    amount <- sectorData$amount
+    rate <- diff(amount) / amount[-length(amount)] * 100
+  
+    #Creating specified sector data frame
+    growth <- data.frame(quarter = sectorData$quarter[-1], rate = rate)
+  }
+
+#Checking
+all.equal(AgricultureGrowth, getGrowth("Agriculture"))
+all.equal(TotalGrowth, getGrowth("Total"))
+head(getGrowth("Mining"))
+head(getGrowth("Education and training"))
