@@ -1,4 +1,4 @@
-getGrowth <- function(sector, startYear, endYear, df)
+getGrowth <- function(sector, startYear, endYear, df = read.csv("gdp-nz.csv", stringsAsFactors = TRUE))
   {
     #This function calculates quarterly GDP growth rates for a specified sector and year range
     #It accepts sector names or numeric factor indices
