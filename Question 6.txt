@@ -1,0 +1,65 @@
+isGDPData <- function(df)
+  {
+    #Checking that input is a data frame
+    stopifnot(is.data.frame(df))
+
+    #Checking required column names
+    if (!identical(names(df), c("sector", "quarter", "amount")))
+      {
+        return(FALSE)
+      }
+
+    #Checking variable types
+    if (!is.factor(df$sector) ||
+        !is.factor(df$quarter) ||
+        !is.numeric(df$amount))
+      {
+        return(FALSE)
+      }
+
+    #Checking that data frame is not empty
+    if (nrow(df) == 0)
+      {
+        return(FALSE)
+      }
+
+    #Checking for missing values
+    if (anyNA(df))
+      {
+        return(FALSE)
+      }
+
+    #Checking for zero or negative GDP amounts
+    if (any(df$amount <= 0))
+      {
+        return(FALSE)
+      }
+
+    #Checking valid quarter formatting
+    quarter <- as.character(df$quarter)
+    if (!all(grepl("^[0-9]{4}Q[1-4]$", quarter)))
+      {
+        return(FALSE)
+      }
+
+    #Checking chronological order and consecutive quarters
+
+    ##Converting quarters into numeric values
+    year <- as.numeric(substr(quarter, 1, 4))
+    qtr <- as.numeric(substr(quarter, 6, 6))
+    quarterIndex <- year * 4 + qtr
+    sectors <- unique(as.character(df$sector))
+
+    ##Order and consecutive quarter check
+    for (s in sectors)
+      {
+        index <- quarterIndex[as.character(df$sector) == s]
+
+        if (length(index) < 2 || any(diff(index) != 1))
+          {
+            return(FALSE)
+          }
+      }
+
+    TRUE
+  }
