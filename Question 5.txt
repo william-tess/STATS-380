@@ -1,0 +1,49 @@
+getGrowth <- function(sector, startYear, endYear)
+  {
+    #This function calculates quarterly GDP growth rates for a specified sector and year range
+    #It accepts sector names or numeric factor indices
+    
+    #Some assumptions:
+    ## Assumes GDP contains sector, quarter, and amount columns
+    ## Assumes GDP observations in chronological order
+    ## Assumes each sector has consecutive quarterly observations
+    ## Assumes GDP amounts are numeric
+    ## Function is limited to data sets structured like gdp and depends on the global variable gdp
+  
+    #Checking validity of sector argument
+    stopifnot(length(sector) == 1)
+    stopifnot(is.character(sector) | is.numeric(sector))
+    stopifnot(!is.na(sector))
+
+    #Checking validity of year arguments
+    stopifnot(length(startYear) == 1, length(endYear) == 1)
+    stopifnot(is.numeric(startYear), is.numeric(endYear))
+    stopifnot(!is.na(startYear), !is.na(endYear))
+    stopifnot(startYear <= endYear)
+
+    #Convert sector index to name
+    if (is.numeric(sector) == TRUE)
+      {
+        stopifnot(sector %in% seq_along(levels(gdp$sector)))
+        sector <- levels(gdp$sector)[sector]
+      }
+
+    #Checking specified sector exists
+    stopifnot(sector %in% levels(gdp$sector))
+
+    #Extracting specified sector from gdp data frame
+    sectorData <- gdp[gdp$sector == sector, ]
+
+    #Calculating quarterly growth rate
+    amount <- sectorData$amount
+    rate <- diff(amount) / amount[-length(amount)] * 100
+
+    #Creating specified sector data frame
+    growth <- data.frame(quarter = sectorData$quarter[-1], rate = rate)
+
+    #Selecting growth rates within specified years
+    year <- as.numeric(substr(as.character(growth$quarter), 1, 4))
+    growth <- growth[year >= startYear & year <= endYear, ]
+
+    growth
+  }
