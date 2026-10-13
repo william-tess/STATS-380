@@ -1,4 +1,4 @@
-plotGrowths <- function(sector, startYear, endYear, df = read.csv("gdp-nz.csv", stringsAsFactors = TRUE))
+plotGrowths <- function(sector, startYear, endYear, df = read.csv("gdp-nz.csv", stringsAsFactors = TRUE), col = c("#2297E6", "#DF536B"))
   {
     #Getting growth rates
     growth <- getGrowths(sector, startYear, endYear, df)
@@ -32,8 +32,8 @@ plotGrowths <- function(sector, startYear, endYear, df = read.csv("gdp-nz.csv", 
     #Reference lines and growth rates
     abline(h = seq(-20, 20, by = 5), col = "grey", lty = 2)
     abline(h = 0)
-    rect(x - 0.35, pmin(0, growth$quarterlyRate), x + 0.35, pmax(0, growth$quarterlyRate), col = "#2297E6", border = NA)
-    lines(x, growth$annualRate, type = "o", col = "#DF536B", pch = 16, lwd = 2)
+    rect(x - 0.35, pmin(0, growth$quarterlyRate), x + 0.35, pmax(0, growth$quarterlyRate), col = col[1], border = NA)
+    lines(x, growth$annualRate, type = "o", col = col[2], pch = 16, lwd = 2)
 
     #Adding axes
     segments(yearPosition[1], yBottom, yearPosition[length(yearPosition)], yBottom)
@@ -43,5 +43,5 @@ plotGrowths <- function(sector, startYear, endYear, df = read.csv("gdp-nz.csv", 
 
     #Adding labels and legend
     title(main = sector, xlab = "Year", ylab = "GDP Growth Rate (%)")
-    legend("topright", legend = c("Quarterly", "Annual"), col = c("#2297E6", "#DF536B"), lty = 1, pch = c(NA, 16), lwd = 2, bg = "white", cex = 0.8)
+    legend("topright", legend = c("Quarterly", "Annual"), col = col, lty = 1, pch = c(NA, 16), lwd = 2, bg = "white", cex = 0.8)
   }
